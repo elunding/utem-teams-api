@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # projects app config
     'projects.apps.ProjectsConfig',
+    # users
+    'users.apps.UsersConfig',
     # CORS
     'corsheaders',
 ]
@@ -85,8 +87,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'utem_teams_db',
-        'USER': 'steve',
-        'PASSWORD': 'unknown',
+        'USER': 'uteams',
+        'PASSWORD': 'PZutJzYLJwJx3H9J',
         'HOST': 'localhost',
         'PORT': '',
     }
