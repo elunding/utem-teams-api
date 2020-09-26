@@ -137,3 +137,7 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:8081',
 )
+
+# custom user model
+
+AUTH_USER_MODEL = 'users.User'
