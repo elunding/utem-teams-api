@@ -14,9 +14,9 @@ class Project(models.Model):
 class Task(models.Model):
 
     PRIORITY_CHOICES = (
-        ('1', 'LOW'),
-        ('2', 'MEDIUM'),
-        ('3', 'HIGH'),
+        (1, 'LOW'),
+        (2, 'MEDIUM'),
+        (3, 'HIGH'),
     )
 
     STATUS_CHOICES = (
@@ -27,7 +27,10 @@ class Task(models.Model):
 
     name = models.TextField()
     description = models.TextField()
-    priority = models.IntegerField(choices=PRIORITY_CHOICES)
+    priority = models.IntegerField(
+        choices=PRIORITY_CHOICES,
+        default=1,
+    )
     status = models.CharField(
         choices=STATUS_CHOICES,
         max_length=2,

@@ -5,8 +5,7 @@ from . models import (
 )
 
 
-class ProjectSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
+class TaskSerializer(serializers.Serializer):
     name = serializers.CharField(
         required=True,
         max_length=100,
@@ -16,11 +15,38 @@ class ProjectSerializer(serializers.ModelSerializer):
         allow_blank=True,
         max_length=500,
     )
-    tasks = serializers.StringRelatedField(many=True)
+    priority = serializers.CharField(
+        source='get_priority_display',
+        required=False,
+    )
+    status = serializers.CharField(
+        source='get_status_display',
+        required=False,
+    )
+
+    class Meta:
+        model = Task
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(
+        required=True,
+        max_length=100,
+    )
+    description = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        max_length=500,
+    )
+    tasks = TaskSerializer(
+        many=True,
+        allow_null=True,
+        required=False,
+    )
 
     class Meta:
         model = Project
-        fields = ['name', 'description', 'created_at', 'updated_at', 'tracks']
+        fields = ['name', 'description', 'created_at', 'updated_at', 'tasks']
 
 
     def create(self, validated_data):
@@ -29,7 +55,14 @@ class ProjectSerializer(serializers.ModelSerializer):
         :param validated_data: deserialized data
         :return: new Project instance
         """
-        return Project.objects.create(**validated_data)
+        project = Project.objects.create(**validated_data)
+        tasks_data = validated_data.get('tasks', None)
+        if tasks_data:
+            validated_data.pop('tasks')
+            task = Task.objects.create(**tasks_data)
+            project.tasks.set(task)
+
+        return project
 
     def update(self, instance, validated_data):
         """
@@ -43,21 +76,3 @@ class ProjectSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
-
-
-class TaskSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(
-        required=True,
-        max_length=100,
-    )
-    description = serializers.CharField(
-        required=False,
-        allow_blank=True,
-        max_length=500,
-    )
-    priority = serializers.CharField(source='get_priority_display')
-    status = serializers.CharField(source='get_status_display')
-
-    class Meta:
-        model = Task

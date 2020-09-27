@@ -19,11 +19,12 @@ from django.urls import path
 
 from projects.views import (
     ProjectDetailView,
-    # ProjectCreateView,
+    ProjectCreateView,
     # ProjectUpdateView,
     # ProjectDeleteView,
     ProjectListView,
     TaskListView,
+    TaskCreateView,
 )
 
 # from users.views import CustomLoginView
@@ -47,13 +48,28 @@ urlpatterns = [
         name='project-list-view',
     ),
     path(
-        'api/project/<int:pk>/',
+        'api/projects/<int:project_id>/',
         ProjectDetailView.as_view(),
         name='project-detail-view',
     ),
+    path(
+        'api/projects/new/',
+        ProjectCreateView.as_view(),
+        name='project-create-view',
+    ),
     # project-tasks views
     path(
-        'api/project/<int:pk>/tasks/',
+        'api/projects/<int:project_id>/tasks/',
+        TaskListView.as_view(),
+        name='project-tasks-list-view',
+    ),
+    path(
+        'api/projects/<int:project_id>/tasks/new/',
+        TaskCreateView.as_view(),
+        name='task-create-view',
+    ),
+    path(
+        'api/projects/<int:project_id>/tasks/<int:task_id>',
         TaskListView.as_view(),
         name='project-tasks-list-view',
     ),
