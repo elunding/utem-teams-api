@@ -7,7 +7,7 @@ from . models import (
 
 class ProjectSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
-    name = serializers.Charfield(
+    name = serializers.CharField(
         required=True,
         max_length=100,
     )
@@ -47,7 +47,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
-    name = serializers.Charfield(
+    name = serializers.CharField(
         required=True,
         max_length=100,
     )
