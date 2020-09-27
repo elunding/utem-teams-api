@@ -4,6 +4,8 @@ from django.db import models
 class Project(models.Model):
     name = models.TextField()
     description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -11,21 +13,23 @@ class Project(models.Model):
 
 class Task(models.Model):
 
-    class Priority(models.IntegerChoices):
-        LOW = 1
-        MEDIUM = 2
-        HIGH = 3
+    PRIORITY_CHOICES = (
+        ('1', 'LOW'),
+        ('2', 'MEDIUM'),
+        ('3', 'HIGH'),
+    )
 
-    class Status(models.TextChoices):
-        TODO = 'TD',
-        IN_PROGRESS = 'IP',
-        DONE = 'DN',
+    STATUS_CHOICES = (
+        ('TD', 'TODO'),
+        ('IP', 'IN_PROGRESS'),
+        ('DN', 'DONE'),
+    )
 
     name = models.TextField()
     description = models.TextField()
-    priority = models.IntegerField(choices=Priority.choices)
+    priority = models.IntegerField(choices=PRIORITY_CHOICES)
     status = models.CharField(
-        choices=Status.choices,
+        choices=STATUS_CHOICES,
         max_length=2,
         default='TD',
     )
@@ -34,3 +38,8 @@ class Task(models.Model):
         related_name='tasks',
         on_delete=models.CASCADE,
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
