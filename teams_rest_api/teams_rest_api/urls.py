@@ -42,18 +42,18 @@ urlpatterns = [
     ),
     # projects
     path(
-        'projects/',
+        'api/projects/',
         ProjectListView.as_view(),
         name='project-list-view',
     ),
     path(
-        'project/<int:pk>/',
+        'api/project/<int:pk>/',
         ProjectDetailView.as_view(),
         name='project-detail-view',
     ),
     # project-tasks views
     path(
-        'project/<int:pk>/tasks/',
+        'api/project/<int:pk>/tasks/',
         TaskListView.as_view(),
         name='project-tasks-list-view',
     ),
