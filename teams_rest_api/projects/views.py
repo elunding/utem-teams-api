@@ -50,8 +50,9 @@ class ProjectDetailView(APIView):
 
 class TaskListView(APIView):
 
-    def get(self, request):
-        tasks = Task.objects.all()
+    def get(self, request, **kwargs):
+        project_id = kwargs.get('project_id', None)
+        tasks = Task.objects.filter(project=project_id).all()
         serializer = TaskSerializer(tasks, many=True)
 
         return Response(serializer.data)
@@ -59,13 +60,20 @@ class TaskListView(APIView):
 
 class TaskCreateView(APIView):
 
-    def post(self, request):
-        serializer = TaskSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            response = Response(serializer.data, status=status.HTTP_201_CREATED)
+    def post(self, request, **kwargs):
+        project_id = kwargs.get('project_id', None)
+        if project_id:
+            request.data.update({
+                'project': project_id,
+            })
+            serializer = TaskSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                response = Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            response = Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
         return response
 

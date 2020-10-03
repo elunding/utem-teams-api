@@ -5,7 +5,7 @@ from . models import (
 )
 
 
-class TaskSerializer(serializers.Serializer):
+class TaskSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         required=True,
         max_length=100,
@@ -26,6 +26,7 @@ class TaskSerializer(serializers.Serializer):
 
     class Meta:
         model = Task
+        fields = ['name', 'description', 'priority', 'status']
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -55,12 +56,14 @@ class ProjectSerializer(serializers.ModelSerializer):
         :param validated_data: deserialized data
         :return: new Project instance
         """
-        project = Project.objects.create(**validated_data)
         tasks_data = validated_data.get('tasks', None)
         if tasks_data:
             validated_data.pop('tasks')
-            task = Task.objects.create(**tasks_data)
-            project.tasks.set(task)
+            project = Project.objects.create(**validated_data)
+            for task_data in tasks_data:
+                Task.objects.create(project=project, **task_data)
+        else:
+            project = Project.objects.create(**validated_data)
 
         return project
 
