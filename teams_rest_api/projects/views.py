@@ -1,3 +1,4 @@
+from django.http.response import JsonResponse
 from django.shortcuts import (
     render,
     get_object_or_404,
@@ -80,8 +81,8 @@ class TaskCreateView(APIView):
 
 class TaskDetailView(APIView):
 
-    def get(self, request, task_id):
-        task = get_object_or_404(Task, pk=task_id)
+    def get(self, request, task_id, project_id):
+        task = get_object_or_404(Task, pk=task_id, project=project_id)
         serializer = TaskSerializer(task)
 
         return Response(serializer.data)

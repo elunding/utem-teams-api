@@ -25,6 +25,7 @@ from projects.views import (
     ProjectListView,
     TaskListView,
     TaskCreateView,
+    TaskDetailView,
 )
 
 # from users.views import CustomLoginView
@@ -69,8 +70,8 @@ urlpatterns = [
         name='task-create-view',
     ),
     path(
-        'api/projects/<int:project_id>/tasks/<int:task_id>',
-        TaskListView.as_view(),
-        name='project-tasks-list-view',
+        'api/projects/<int:project_id>/tasks/<int:task_id>/',
+        TaskDetailView.as_view(),
+        name='project-tasks-detail-view',
     ),
 ]
