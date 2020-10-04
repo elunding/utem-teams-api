@@ -4,6 +4,7 @@ from django.db import models
 class Project(models.Model):
     name = models.TextField()
     description = models.TextField()
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

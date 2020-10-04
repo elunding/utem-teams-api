@@ -1,4 +1,3 @@
-from django.http.response import JsonResponse
 from django.shortcuts import (
     render,
     get_object_or_404,
@@ -48,6 +47,17 @@ class ProjectDetailView(APIView):
 
         return Response(serializer.data)
 
+    def put(self, request, project_id):
+        project = get_object_or_404(Project, pk=project_id)
+        serializer = ProjectSerializer(project, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            response = Response(serializer.data)
+        else:
+            response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return response
+
 
 class TaskListView(APIView):
 
@@ -86,3 +96,21 @@ class TaskDetailView(APIView):
         serializer = TaskSerializer(task)
 
         return Response(serializer.data)
+
+    def patch(self, request, task_id, project_id):
+        task = get_object_or_404(Task, pk=task_id, project=project_id)
+        serializer = TaskSerializer(task, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            response = Response(serializer.data)
+        else:
+            response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return response
+
+    def delete(self, request, task_id, project_id):
+        task = get_object_or_404(Task, pk=task_id, project=project_id)
+        task.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

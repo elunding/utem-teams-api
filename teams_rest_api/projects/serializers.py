@@ -26,7 +26,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['name', 'description', 'priority', 'status']
+        fields = ('name', 'description', 'priority', 'status')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -39,6 +39,9 @@ class ProjectSerializer(serializers.ModelSerializer):
         allow_blank=True,
         max_length=500,
     )
+    is_active = serializers.BooleanField(
+        default=True,
+    )
     tasks = TaskSerializer(
         many=True,
         allow_null=True,
@@ -47,8 +50,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['name', 'description', 'created_at', 'updated_at', 'tasks']
-
+        fields = ('name', 'description', 'is_active', 'created_at', 'updated_at', 'tasks')
 
     def create(self, validated_data):
         """
