@@ -31,7 +31,7 @@ class ProjectCreateView(APIView):
     def post(self, request):
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=self.request.user)
             response = Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -47,9 +47,10 @@ class ProjectDetailView(APIView):
 
         return Response(serializer.data)
 
-    def put(self, request, project_id):
+    def patch(self, request, project_id):
         project = get_object_or_404(Project, pk=project_id)
-        serializer = ProjectSerializer(project, data=request.data)
+        serializer = ProjectSerializer(project, data=request.data, partial=True)
+
         if serializer.is_valid():
             serializer.save()
             response = Response(serializer.data)
@@ -79,7 +80,7 @@ class TaskCreateView(APIView):
             })
             serializer = TaskSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save()
+                serializer.save(creator=self.request.user)
                 response = Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
