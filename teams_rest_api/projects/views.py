@@ -79,7 +79,7 @@ class TaskCreateView(APIView):
             })
             serializer = TaskSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save()
+                serializer.save(creator=self.request.user)
                 response = Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -28,10 +28,36 @@ class TaskSerializer(serializers.ModelSerializer):
         source='get_status_display',
         required=False,
     )
+    project = serializers.PrimaryKeyRelatedField(
+        required=True,
+        queryset=Project.objects.all(),
+    )
+    assignee = UserSerializer(required=False)
+    creator = UserSerializer(read_only=True)
 
     class Meta:
         model = Task
-        fields = ('name', 'description', 'priority', 'status')
+        fields = ('name', 'description', 'priority', 'status', 'project', 'created_at', 'updated_at', 'assignee', 'creator')  # noqa
+
+    def create(self, validated_data):
+        """
+        :param validated_data: deserialized data
+        :return: new Task instance
+        """
+        assignee_data = validated_data.get('assignee', None)
+
+        if assignee_data:
+            del validated_data['assignee']
+            task = Task.objects.create(**validated_data)
+            assignee_record = User.objects.filter(**assignee_data).first()
+
+            if assignee_record:
+                assignee_record.assigned_tasks.add(task)
+
+        else:
+            task = Task.objects.create(**validated_data)
+
+        return task
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -66,12 +92,11 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """
-
         :param validated_data: deserialized data
         :return: new Project instance
         """
         members_data = validated_data.get('project_members', None)
-        owner = validated_data['owner']
+        owner = validated_data.get('owner', None)
         owner_details = OrderedDict(
             [
                 ('uuid', owner.uuid),
