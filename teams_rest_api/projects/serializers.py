@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from rest_framework import serializers
 
 from users.serializers import UserSerializer
@@ -70,6 +71,15 @@ class ProjectSerializer(serializers.ModelSerializer):
         :return: new Project instance
         """
         members_data = validated_data.get('project_members', None)
+        owner = validated_data['owner']
+        owner_details = OrderedDict(
+            [
+                ('uuid', owner.uuid),
+                ('first_name', owner.first_name),
+                ('last_name', owner.last_name),
+            ],
+        )
+        members_data.append(owner_details)
 
         if members_data:
             del validated_data['project_members']
