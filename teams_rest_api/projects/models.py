@@ -7,6 +7,17 @@ class Project(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='owned_projects',
+        null=True,
+    )
+    project_members = models.ManyToManyField(
+        'users.User',
+        related_name='contributing_projects',
+        blank=True,
+    )
 
     def __str__(self):
         return self.name
@@ -44,6 +55,18 @@ class Task(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    assignee = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='assigned_tasks',
+        null=True,
+    )
+    creator = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='tasks',
+        null=True,
+    )
 
     def __str__(self):
         return self.name
