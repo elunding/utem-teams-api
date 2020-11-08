@@ -52,6 +52,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         required=False,
         read_only=True,
     )
+    owner = UserSerializer(read_only=True)
     project_members = UserSerializer(
         many=True,
         allow_null=True,
@@ -79,6 +80,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
                 if user_record:
                     user_record.contributing_projects.add(project)
+
         else:
             project = Project.objects.create(**validated_data)
 

@@ -4,6 +4,7 @@ from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    uuid = serializers.CharField(required=True)
     first_name = serializers.CharField(
         required=True,
         max_length=50,
@@ -15,8 +16,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name')
+        fields = ('uuid', 'first_name', 'last_name')
 
+    def to_representation(self, obj):
+        return {
+            'full_name': f'{obj.first_name} {obj.last_name}'
+        }
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
