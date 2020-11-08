@@ -76,7 +76,9 @@ class ProjectSerializer(serializers.ModelSerializer):
 
             for member_data in members_data:
                 user_record = User.objects.filter(**member_data).first()
-                user_record.contributing_projects.add(project)
+
+                if user_record:
+                    user_record.contributing_projects.add(project)
         else:
             project = Project.objects.create(**validated_data)
 
