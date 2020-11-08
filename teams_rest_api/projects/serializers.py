@@ -1,4 +1,8 @@
 from rest_framework import serializers
+
+from users.serializers import UserSerializer
+from users.models import User
+
 from . models import (
     Project,
     Task,
@@ -46,11 +50,17 @@ class ProjectSerializer(serializers.ModelSerializer):
         many=True,
         allow_null=True,
         required=False,
+        read_only=True,
+    )
+    project_members = UserSerializer(
+        many=True,
+        allow_null=True,
+        required=False,
     )
 
     class Meta:
         model = Project
-        fields = ('name', 'description', 'is_active', 'created_at', 'updated_at', 'tasks')
+        fields = ('name', 'description', 'is_active', 'created_at', 'updated_at', 'tasks', 'owner', 'project_members')  # noqa
 
     def create(self, validated_data):
         """
@@ -58,12 +68,15 @@ class ProjectSerializer(serializers.ModelSerializer):
         :param validated_data: deserialized data
         :return: new Project instance
         """
-        tasks_data = validated_data.get('tasks', None)
-        if tasks_data:
-            validated_data.pop('tasks')
+        members_data = validated_data.get('project_members', None)
+
+        if members_data:
+            del validated_data['project_members']
             project = Project.objects.create(**validated_data)
-            for task_data in tasks_data:
-                Task.objects.create(project=project, **task_data)
+
+            for member_data in members_data:
+                user_record = User.objects.filter(**member_data).first()
+                user_record.contributing_projects.add(project)
         else:
             project = Project.objects.create(**validated_data)
 
