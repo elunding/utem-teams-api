@@ -86,12 +86,17 @@ class TaskSerializer(serializers.ModelSerializer):
         return task
 
     def update(self, instance, validated_data):
+        """
+
+        :param instance: Task instance
+        :param validated_data: deserialized data
+        :return: updated Task instance
+        """
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.priority = validated_data.get('priority', instance.priority)
         instance.status = validated_data.get('status', instance.status)
         instance.assignee = validated_data.get('assignee', instance.assignee)
-        import ipdb; ipdb.set_trace()
         instance.save()
 
         return instance
@@ -163,11 +168,11 @@ class ProjectSerializer(serializers.ModelSerializer):
 
         :param instance: Project instance
         :param validated_data: deserialized data
-        :return: updated instance
+        :return: updated Project instance
         """
-        import ipdb; ipdb.set_trace()
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.save()
 
         return instance

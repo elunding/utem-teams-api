@@ -47,10 +47,10 @@ class ProjectDetailView(APIView):
 
         return Response(serializer.data)
 
-    def put(self, request, project_id):
-        import ipdb; ipdb.set_trace()
+    def patch(self, request, project_id):
         project = get_object_or_404(Project, pk=project_id)
-        serializer = ProjectSerializer(project, data=request.data)
+        serializer = ProjectSerializer(project, data=request.data, partial=True)
+
         if serializer.is_valid():
             serializer.save()
             response = Response(serializer.data)
@@ -101,7 +101,7 @@ class TaskDetailView(APIView):
     def patch(self, request, task_id, project_id):
         task = get_object_or_404(Task, pk=task_id, project=project_id)
         serializer = TaskSerializer(task, data=request.data, partial=True)
-        import ipdb; ipdb.set_trace()
+
         if serializer.is_valid():
             serializer.save()
             response = Response(serializer.data)
