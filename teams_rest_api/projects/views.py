@@ -72,9 +72,15 @@ class TaskListView(APIView):
     def get(self, request, **kwargs):
         project_id = kwargs.get('project_id', None)
         tasks = Task.objects.filter(project=project_id).all()
-        serializer = TaskSerializer(tasks, many=True)
+        if tasks:
+            serializer = TaskSerializer(tasks, many=True)
+            response_data = serializer.data
+            status_code = status.HTTP_200_OK
+        else:
+            response_data = 'Not found'
+            status_code = status.HTTP_404_NOT_FOUND
 
-        return Response(serializer.data)
+        return Response(response_data, status_code)
 
 
 class TaskCreateView(APIView):
