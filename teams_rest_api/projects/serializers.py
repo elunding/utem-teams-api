@@ -138,19 +138,19 @@ class ProjectSerializer(serializers.ModelSerializer):
         :return: new Project instance
         """
         members_data = validated_data.get('project_members', None)
-        owner = validated_data.get('owner', None)
-        owner_details = OrderedDict(
-            [
-                ('uuid', owner.uuid),
-                ('first_name', owner.first_name),
-                ('last_name', owner.last_name),
-            ],
-        )
-        members_data.append(owner_details)
 
         if members_data:
             del validated_data['project_members']
             project = Project.objects.create(**validated_data)
+            owner = validated_data.get('owner', None)
+            owner_details = OrderedDict(
+                [
+                    ('uuid', owner.uuid),
+                    ('first_name', owner.first_name),
+                    ('last_name', owner.last_name),
+                ],
+            )
+            members_data.append(owner_details)
 
             for member_data in members_data:
                 user_record = User.objects.filter(**member_data).first()

@@ -20,10 +20,17 @@ from .serializers import (
 class ProjectListView(APIView):
 
     def get(self, request):
-        projects = Project.objects.all()
-        serializer = ProjectSerializer(projects, many=True)
+        projects = Project.objects.filter(project_members=request.user)
+        if projects:
+            serializer = ProjectSerializer(projects, many=True)
+            response_data = serializer.data
+            status_code = status.HTTP_200_OK
 
-        return Response(serializer.data)
+        else:
+            response_data = 'Not found'
+            status_code = status.HTTP_404_NOT_FOUND
+
+        return Response(response_data, status_code)
 
 
 class ProjectCreateView(APIView):
