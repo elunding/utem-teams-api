@@ -130,7 +130,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('name', 'description', 'is_active', 'created_at', 'updated_at', 'tasks', 'owner', 'project_members')  # noqa
+        fields = ('id', 'name', 'description', 'is_active', 'created_at', 'updated_at', 'tasks', 'owner', 'project_members')  # noqa
 
     def create(self, validated_data):
         """
