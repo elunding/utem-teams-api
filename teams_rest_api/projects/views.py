@@ -3,6 +3,7 @@ from django.shortcuts import (
     get_object_or_404,
 )
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -15,6 +16,7 @@ from .serializers import (
     TaskSerializer,
     ProjectSerializer,
 )
+from users.serializers import UserSerializer
 
 
 class ProjectListView(APIView):
@@ -30,7 +32,12 @@ class ProjectListView(APIView):
             response_data = 'Not found'
             status_code = status.HTTP_404_NOT_FOUND
 
-        return Response(response_data, status_code)
+        response = {
+            'data': response_data,
+            'status_code': status_code,
+        }
+
+        return Response(response, status_code)
 
 
 class ProjectCreateView(APIView):
@@ -80,7 +87,12 @@ class TaskListView(APIView):
             response_data = 'Not found'
             status_code = status.HTTP_404_NOT_FOUND
 
-        return Response(response_data, status_code)
+        response = {
+            'data': response_data,
+            'status_code': status_code,
+        }
+
+        return Response(response, status_code)
 
 
 class TaskCreateView(APIView):
@@ -128,3 +140,24 @@ class TaskDetailView(APIView):
         task.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MemberListView(ListAPIView):
+    def get(self, request, **kwargs):
+        project_id = kwargs.get('project_id', None)
+        members = Project.objects.get(id=project_id).project_members.all()
+
+        if members:
+            serializer = UserSerializer(members, many=True)
+            response_data = serializer.data
+            status_code = status.HTTP_200_OK
+        else:
+            response_data = 'Not found'
+            status_code = status.HTTP_404_NOT_FOUND
+
+        response = {
+            'data': response_data,
+            'status_code': status_code,
+        }
+
+        return Response(response, status_code)

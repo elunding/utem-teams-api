@@ -20,8 +20,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, obj):
         return {
-            'full_name': f'{obj.first_name} {obj.last_name}'
+            'full_name': f'{obj.first_name} {obj.last_name}',
+            'uuid': obj.uuid,
         }
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()

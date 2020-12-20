@@ -28,6 +28,7 @@ from projects.views import (
     TaskListView,
     TaskCreateView,
     TaskDetailView,
+    MemberListView,
 )
 
 from users.views import (
@@ -88,5 +89,10 @@ urlpatterns = [
         'api/projects/<int:project_id>/tasks/<int:task_id>/',
         TaskDetailView.as_view(),
         name='project-tasks-detail-view',
+    ),
+    path(
+        'api/projects/<int:project_id>/members/',
+        MemberListView.as_view(),
+        name='project-members-list-view',
     ),
 ]
