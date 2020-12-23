@@ -6,11 +6,11 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     uuid = serializers.CharField(required=True)
     first_name = serializers.CharField(
-        required=True,
+        required=False,
         max_length=50,
     )
     last_name = serializers.CharField(
-        required=True,
+        required=False,
         max_length=50,
     )
 
