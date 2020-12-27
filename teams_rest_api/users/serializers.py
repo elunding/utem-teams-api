@@ -26,18 +26,24 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(
+        required=True,
+        allow_blank=False,
+    )
     password = serializers.CharField(
         min_length=8,
         max_length=64,
+        allow_blank=False,
     )
     first_name = serializers.CharField(
         required=True,
         max_length=50,
+        allow_blank=False,
     )
     last_name = serializers.CharField(
         required=True,
         max_length=50,
+        allow_blank=False,
     )
 
     class Meta:

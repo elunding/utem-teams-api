@@ -74,14 +74,35 @@ class ProjectDetailView(APIView):
         return response
 
 
-class TaskListView(APIView):
+class TaskListView(ListAPIView):
+
+    model = Task
+    serializer_class = TaskSerializer
 
     def get(self, request, **kwargs):
         project_id = kwargs.get('project_id', None)
         tasks = Task.objects.filter(project=project_id).all()
         if tasks:
-            serializer = TaskSerializer(tasks, many=True)
-            response_data = serializer.data
+            todo_tasks = tasks.filter(
+                project=project_id,
+                status='TD',
+            ).all()
+            in_progress_tasks = tasks.filter(
+                project=project_id,
+                status='IP',
+            ).all()
+            done_tasks = tasks.filter(
+                project=project_id,
+                status='DN',
+            ).all()
+            serialized_todo_tasks = self.serializer_class(todo_tasks, many=True).data
+            serialized_in_progress_tasks = self.serializer_class(in_progress_tasks, many=True).data
+            serialized_done_tasks = self.serializer_class(done_tasks, many=True).data
+            response_data = {
+                'todo_tasks': serialized_todo_tasks,
+                'in_progress_tasks': serialized_in_progress_tasks,
+                'done_tasks': serialized_done_tasks,
+            }
             status_code = status.HTTP_200_OK
         else:
             response_data = 'Not found'
