@@ -57,7 +57,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('name', 'description', 'priority', 'priority_name', 'status', 'status_name', 'project', 'created_at', 'updated_at', 'assignee', 'creator')  # noqa
+        fields = ('id', 'name', 'description', 'priority', 'priority_name', 'status', 'status_name', 'project', 'created_at', 'updated_at', 'assignee', 'creator')  # noqa
 
     def get_priority_name(self, obj):
         return obj.get_priority_display()
