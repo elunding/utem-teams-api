@@ -87,21 +87,27 @@ class TaskListView(ListAPIView):
                 project=project_id,
                 status='TD',
             ).all()
+
             in_progress_tasks = tasks.filter(
                 project=project_id,
                 status='IP',
             ).all()
+
             done_tasks = tasks.filter(
                 project=project_id,
                 status='DN',
             ).all()
+
             serialized_todo_tasks = self.serializer_class(todo_tasks, many=True).data
             serialized_in_progress_tasks = self.serializer_class(in_progress_tasks, many=True).data
             serialized_done_tasks = self.serializer_class(done_tasks, many=True).data
+            project_name = Project.objects.get(id=project_id).name
+
             response_data = {
                 'todo_tasks': serialized_todo_tasks,
                 'in_progress_tasks': serialized_in_progress_tasks,
                 'done_tasks': serialized_done_tasks,
+                'project_name': project_name,
             }
             status_code = status.HTTP_200_OK
         else:
