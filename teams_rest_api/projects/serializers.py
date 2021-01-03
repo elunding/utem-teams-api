@@ -96,7 +96,17 @@ class TaskSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get('description', instance.description)
         instance.priority = validated_data.get('priority', instance.priority)
         instance.status = validated_data.get('status', instance.status)
-        instance.assignee = validated_data.get('assignee', instance.assignee)
+        assignee_data = validated_data.get('assignee', None)
+
+        if assignee_data:
+            del validated_data['assignee']
+            assignee_record = User.objects.filter(**assignee_data).first()
+            if assignee_record.id != instance.assignee.id:
+                instance.assignee = assignee_record
+                assignee_record.assigned_tasks.add(instance)
+        else:
+            instance.assignee = validated_data.get('assignee', instance.assignee)
+
         instance.save()
 
         return instance
