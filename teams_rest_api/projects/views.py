@@ -44,6 +44,7 @@ class ProjectCreateView(APIView):
 
     def post(self, request):
         serializer = ProjectSerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save(owner=self.request.user)
             response = Response(serializer.data, status=status.HTTP_201_CREATED)

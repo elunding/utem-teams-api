@@ -56,7 +56,14 @@ class UserListView(ListAPIView):
 
     def get(self, request):
         user_model = get_user_model()
-        users = user_model.objects.all()
+        authenticated_user_id = request.user.id
+        users = user_model.objects.exclude(
+            id=authenticated_user_id,
+        ).exclude(
+            first_name='',
+        ).exclude(
+            last_name='',
+        )
 
         response_data = 'Not found'
         status_code = status.HTTP_404_NOT_FOUND
