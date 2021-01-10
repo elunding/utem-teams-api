@@ -31,6 +31,10 @@ class ProjectListView(APIView):
                 is_owned_by_user = bool(project['owner']['full_name'] == str(request.user))
                 project['is_owned_by_user'] = is_owned_by_user
 
+                # finished_tasks = [task for task in project['tasks'] if task['status'] == 'DN']  # noqa
+                # finished_tasks_percentage = (len(finished_tasks) / len(response_data[0]['tasks'])) * 100  # noqa
+
+            # import ipdb; ipdb.set_trace()
             status_code = status.HTTP_200_OK
 
         else:
