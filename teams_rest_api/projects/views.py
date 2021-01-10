@@ -26,6 +26,11 @@ class ProjectListView(APIView):
         if projects:
             serializer = ProjectSerializer(projects, many=True)
             response_data = serializer.data
+
+            for project in response_data:
+                is_owned_by_user = bool(project['owner']['full_name'] == str(request.user))
+                project['is_owned_by_user'] = is_owned_by_user
+
             status_code = status.HTTP_200_OK
 
         else:

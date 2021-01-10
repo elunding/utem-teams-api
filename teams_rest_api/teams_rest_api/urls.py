@@ -34,6 +34,7 @@ from projects.views import (
 from users.views import (
     UserRegistrationView,
     UserListView,
+    UserDetailView,
 )
 
 
@@ -100,5 +101,10 @@ urlpatterns = [
         'api/users/',
         UserListView.as_view(),
         name='user-list-view',
+    ),
+    path(
+        'api/user/detail/',
+        UserDetailView.as_view(),
+        name='user-detail-view',
     ),
 ]
