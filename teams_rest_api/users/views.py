@@ -1,5 +1,10 @@
+import jwt
+import logging
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+
 from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
@@ -13,6 +18,10 @@ from .serializers import (
     UserRegistrationSerializer,
     UserSerializer,
 )
+from services import EmailServices
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserRegistrationView(CreateAPIView):
@@ -25,6 +34,11 @@ class UserRegistrationView(CreateAPIView):
         try:
             if serializer.is_valid():
                 serializer.save()
+                EmailServices.send_verification_email(
+                    user_email=serializer.data.get('email'),
+                    request=request,
+                )
+
                 response = Response(
                     {
                         'message': 'User registration successful',
@@ -52,6 +66,41 @@ class UserRegistrationView(CreateAPIView):
             )
 
         return response
+
+
+class VerifyUserEmailView(APIView):
+
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        token = request.GET.get('token', None)
+
+        logger.debug("verifying user...")
+
+        if token:
+            logger.debug(f"token: {token}")
+            try:
+                payload = jwt.decode(token, settings.SECRET_KEY)
+                logger.debug(f"payload: {payload}")
+
+                user_model = get_user_model()
+                user = user_model.objects.get(id=payload['user_id'])
+
+                logger.debug(f"user object: {user}")
+
+                if not user.is_validated:
+                    user.is_validated = True
+                    user.save()
+
+                return Response({'message': 'User succesfully activated'}, status=status.HTTP_200_OK)  # noqa
+
+            except jwt.ExpiredSignatureError as err:
+                return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+
+            except jwt.exceptions.DecodeError as err:
+                return Response({'error': 'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error': 'Token is missing'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserListView(ListAPIView):

@@ -22,6 +22,8 @@ from users.serializers import UserSerializer
 class ProjectListView(APIView):
 
     def get(self, request):
+
+
         projects = Project.objects.filter(project_members=request.user)
         if projects:
             serializer = ProjectSerializer(projects, many=True)

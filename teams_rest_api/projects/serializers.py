@@ -52,12 +52,16 @@ class TaskSerializer(serializers.ModelSerializer):
         required=True,
         queryset=Project.objects.all(),
     )
+    due_date = serializers.DateField(
+        input_formats=['%Y-%m-%d'],
+        required=True,
+    )
     assignee = UserSerializer(required=False)
     creator = UserSerializer(read_only=True)
 
     class Meta:
         model = Task
-        fields = ('id', 'name', 'description', 'priority', 'priority_name', 'status', 'status_name', 'project', 'created_at', 'updated_at', 'assignee', 'creator')  # noqa
+        fields = ('id', 'name', 'description', 'priority', 'priority_name', 'status', 'status_name', 'project', 'due_date', 'created_at', 'updated_at', 'assignee', 'creator')  # noqa
 
     def get_priority_name(self, obj):
         return obj.get_priority_display()
@@ -96,6 +100,7 @@ class TaskSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get('description', instance.description)
         instance.priority = validated_data.get('priority', instance.priority)
         instance.status = validated_data.get('status', instance.status)
+        instance.due_date = validated_data.get('due_date', instance.due_date)
         assignee_data = validated_data.get('assignee', None)
 
         if assignee_data:

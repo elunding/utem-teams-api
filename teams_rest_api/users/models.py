@@ -52,6 +52,7 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), max_length=255, unique=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    is_validated = models.BooleanField(default=False)
 
     objects = UserManager()
 

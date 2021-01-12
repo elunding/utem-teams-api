@@ -33,6 +33,7 @@ from projects.views import (
 
 from users.views import (
     UserRegistrationView,
+    VerifyUserEmailView,
     UserListView,
     UserDetailView,
 )
@@ -59,6 +60,21 @@ urlpatterns = [
         'api/users/signup/',
         UserRegistrationView.as_view(),
         name='user-registration-view',
+    ),
+    path(
+        'api/users/verify-email',
+        VerifyUserEmailView.as_view(),
+        name='user-verify-email-view',
+    ),
+    path(
+        'api/users/',
+        UserListView.as_view(),
+        name='user-list-view',
+    ),
+    path(
+        'api/user/detail/',
+        UserDetailView.as_view(),
+        name='user-detail-view',
     ),
     # projects
     path(
@@ -96,15 +112,5 @@ urlpatterns = [
         'api/projects/<int:project_id>/members/',
         MemberListView.as_view(),
         name='project-members-list-view',
-    ),
-    path(
-        'api/users/',
-        UserListView.as_view(),
-        name='user-list-view',
-    ),
-    path(
-        'api/user/detail/',
-        UserDetailView.as_view(),
-        name='user-detail-view',
     ),
 ]
