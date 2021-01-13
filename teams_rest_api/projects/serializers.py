@@ -52,12 +52,16 @@ class TaskSerializer(serializers.ModelSerializer):
         required=True,
         queryset=Project.objects.all(),
     )
+    due_date = serializers.DateField(
+        input_formats=['%Y-%m-%d'],
+        required=True,
+    )
     assignee = UserSerializer(required=False)
     creator = UserSerializer(read_only=True)
 
     class Meta:
         model = Task
-        fields = ('name', 'description', 'priority', 'priority_name', 'status', 'status_name', 'project', 'created_at', 'updated_at', 'assignee', 'creator')  # noqa
+        fields = ('id', 'name', 'description', 'priority', 'priority_name', 'status', 'status_name', 'project', 'due_date', 'created_at', 'updated_at', 'assignee', 'creator')  # noqa
 
     def get_priority_name(self, obj):
         return obj.get_priority_display()
@@ -96,7 +100,18 @@ class TaskSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get('description', instance.description)
         instance.priority = validated_data.get('priority', instance.priority)
         instance.status = validated_data.get('status', instance.status)
-        instance.assignee = validated_data.get('assignee', instance.assignee)
+        instance.due_date = validated_data.get('due_date', instance.due_date)
+        assignee_data = validated_data.get('assignee', None)
+
+        if assignee_data:
+            del validated_data['assignee']
+            assignee_record = User.objects.filter(**assignee_data).first()
+            if assignee_record.id != instance.assignee.id:
+                instance.assignee = assignee_record
+                assignee_record.assigned_tasks.add(instance)
+        else:
+            instance.assignee = validated_data.get('assignee', instance.assignee)
+
         instance.save()
 
         return instance
@@ -130,7 +145,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('name', 'description', 'is_active', 'created_at', 'updated_at', 'tasks', 'owner', 'project_members')  # noqa
+        fields = ('id', 'name', 'description', 'is_active', 'created_at', 'updated_at', 'tasks', 'owner', 'project_members')  # noqa
 
     def create(self, validated_data):
         """
@@ -138,19 +153,19 @@ class ProjectSerializer(serializers.ModelSerializer):
         :return: new Project instance
         """
         members_data = validated_data.get('project_members', None)
-        owner = validated_data.get('owner', None)
-        owner_details = OrderedDict(
-            [
-                ('uuid', owner.uuid),
-                ('first_name', owner.first_name),
-                ('last_name', owner.last_name),
-            ],
-        )
-        members_data.append(owner_details)
 
         if members_data:
             del validated_data['project_members']
             project = Project.objects.create(**validated_data)
+            owner = validated_data.get('owner', None)
+            owner_details = OrderedDict(
+                [
+                    ('uuid', owner.uuid),
+                    ('first_name', owner.first_name),
+                    ('last_name', owner.last_name),
+                ],
+            )
+            members_data.append(owner_details)
 
             for member_data in members_data:
                 user_record = User.objects.filter(**member_data).first()

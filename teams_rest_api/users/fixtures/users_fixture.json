@@ -1,0 +1,70 @@
+[
+  {
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+      "password": "testpass",
+      "last_login": "2020-12-01T02:57:49.008Z",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true,
+      "is_validated": true,
+      "date_joined": "2020-11-26T23:19:49.976Z",
+      "first_name": "Ignacia",
+      "last_name": "Lopez",
+      "email": "ignacia.lopezr@utem.cl",
+      "uuid": "6043155e-87c4-4c29-8672-e92e88863584"
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+      "password": "testpass",
+      "last_login": "2020-12-02T04:24:09.892Z",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true,
+      "is_validated": true,
+      "date_joined": "2020-11-26T23:29:54.628Z",
+      "first_name": "Jorge",
+      "last_name": "Arredondo",
+      "email": "jorge.arredondop@utem.cl",
+      "uuid": "1acfba01-e480-487a-8e80-0fe499e3840d"
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 3,
+    "fields": {
+      "password": "testpass",
+      "last_login": "2020-12-02T05:43:38.549Z",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true,
+      "is_validated": true,
+      "date_joined": "2020-12-02T05:21:39.812Z",
+      "first_name": "Isabel",
+      "last_name": "Soto",
+      "email": "isabel.sotob@utem.cl",
+      "uuid": "cdaa1891-99c1-4dfd-8357-1097cabdaf2a"
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 4,
+    "fields": {
+      "password": "testpass",
+      "last_login": "2020-12-02T05:43:38.549Z",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true,
+      "is_validated": true,
+      "date_joined": "2020-12-02T05:21:40.812Z",
+      "first_name": "Ernesto",
+      "last_name": "Garrido",
+      "email": "ernesto.garridoi@utem.cl",
+      "uuid": "5df24922-a7ad-4b64-9f31-c1e5cbcfbdfa"
+    }
+  }
+]
