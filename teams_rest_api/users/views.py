@@ -34,10 +34,7 @@ class UserRegistrationView(CreateAPIView):
         try:
             if serializer.is_valid():
                 serializer.save()
-                EmailServices.send_verification_email(
-                    user_email=serializer.data.get('email'),
-                    request=request,
-                )
+                EmailServices.send_verification_email(user_email=serializer.data.get('email'))
 
                 response = Response(
                     {

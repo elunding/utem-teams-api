@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.shortcuts import (
     render,
     get_object_or_404,
@@ -10,21 +11,23 @@ from rest_framework import status
 from .models import (
     Task,
     Project,
+    Invitation,
 )
 
 from .serializers import (
     TaskSerializer,
     ProjectSerializer,
+    InvitationSerializer,
 )
 from users.serializers import UserSerializer
+from services import EmailServices
 
 
 class ProjectListView(APIView):
 
     def get(self, request):
-
-
         projects = Project.objects.filter(project_members=request.user)
+
         if projects:
             serializer = ProjectSerializer(projects, many=True)
             response_data = serializer.data
@@ -36,7 +39,6 @@ class ProjectListView(APIView):
                 # finished_tasks = [task for task in project['tasks'] if task['status'] == 'DN']  # noqa
                 # finished_tasks_percentage = (len(finished_tasks) / len(response_data[0]['tasks'])) * 100  # noqa
 
-            # import ipdb; ipdb.set_trace()
             status_code = status.HTTP_200_OK
 
         else:
@@ -58,6 +60,30 @@ class ProjectCreateView(APIView):
 
         if serializer.is_valid():
             serializer.save(owner=self.request.user)
+            authenticated_user_uuid = request.user.uuid
+            members = [member for member in serializer.data.get('project_members') if member['uuid'] != authenticated_user_uuid]  # noqa
+
+            for member in members:
+                user_model = get_user_model()
+                member_instance = user_model.objects.get(uuid=member['uuid'])
+                project = Project.objects.get(id=serializer.data['id'])
+
+                invitation = Invitation.objects.create(
+                    sender=request.user,
+                    invitee=member_instance,
+                    project=project,
+                )
+
+                EmailServices.send_project_invitation(
+                    invited_user_email=member_instance.email,
+                    project_name=serializer.data['name'],
+                    project_owner_name=serializer.data['owner']['full_name'],
+                    invitation_id=invitation.id,
+                )
+
+                if not invitation.status:
+                    member_instance.contributing_projects.remove(project)
+
             response = Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -185,6 +211,7 @@ class TaskDetailView(APIView):
 class MemberListView(ListAPIView):
     def get(self, request, **kwargs):
         project_id = kwargs.get('project_id', None)
+
         members = Project.objects.get(id=project_id).project_members.all()
 
         if members:
@@ -201,3 +228,36 @@ class MemberListView(ListAPIView):
         }
 
         return Response(response, status_code)
+
+
+class InvitationConfirmView(APIView):
+
+    def post(self, request, **kwargs):
+        invitation_id = kwargs.get('invitation_id', None)
+        confirmation_status = request.data.get('confirm')
+        invitation = Invitation.objects.get(id=invitation_id)
+
+        if confirmation_status:
+            invitation.status = True
+            invitation.save()
+
+            user = request.user
+            project = invitation.project
+            user.contributing_projects.add(project)
+
+            return Response({'message': 'User confirmed invitation successfully'}, status=status.HTTP_200_OK)  # noqa
+
+        else:
+            return Response({'message': 'User denied invitation successfully'}, status=status.HTTP_200_OK)  # noqa
+
+
+class InvitationDetailView(APIView):
+
+    def get(self, request, invitation_id):
+        invitation = get_object_or_404(Invitation, pk=invitation_id)
+        if request.user in (invitation.sender, invitation.invitee):
+            serializer = InvitationSerializer(invitation)
+            return Response(serializer.data)
+
+        else:
+            return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)

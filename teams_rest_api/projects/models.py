@@ -23,6 +23,26 @@ class Project(models.Model):
         return self.name
 
 
+class Invitation(models.Model):
+    sender = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='sent_by',
+    )
+    invitee = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='invitee',
+    )
+    status = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='invitations',
+    )
+
+
 class Task(models.Model):
 
     PRIORITY_CHOICES = (

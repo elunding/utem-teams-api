@@ -29,6 +29,8 @@ from projects.views import (
     TaskCreateView,
     TaskDetailView,
     MemberListView,
+    InvitationConfirmView,
+    InvitationDetailView,
 )
 
 from users.views import (
@@ -112,5 +114,15 @@ urlpatterns = [
         'api/projects/<int:project_id>/members/',
         MemberListView.as_view(),
         name='project-members-list-view',
+    ),
+    path(
+        'api/invitation/<int:invitation_id>/confirm/',
+        InvitationConfirmView.as_view(),
+        name='project-invitation-confirm-view',
+    ),
+    path(
+        'api/invitation/<int:invitation_id>/',
+        InvitationDetailView.as_view(),
+        name='project-invitation-view',
     ),
 ]

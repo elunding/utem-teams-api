@@ -7,6 +7,7 @@ from users.models import User
 from . models import (
     Project,
     Task,
+    Invitation,
 )
 
 
@@ -191,3 +192,19 @@ class ProjectSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class InvitationSerializer(serializers.ModelSerializer):
+    sender = UserSerializer(read_only=True)
+    invitee = UserSerializer(required=True)
+    status = serializers.BooleanField(default=False)
+    project = ProjectSerializer(read_only=True)
+
+    class Meta:
+        model = Invitation
+        fields = ('sender', 'invitee', 'status', 'created_at', 'project')
+
+    '''
+    def create(self, validated_data):
+        invitee = validated_data.get('invitee', None)
+    '''
