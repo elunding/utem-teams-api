@@ -81,6 +81,8 @@ class ProjectCreateView(APIView):
                     invitation_id=invitation.id,
                 )
 
+                # import ipdb; ipdb.set_trace()
+
                 if not invitation.status:
                     member_instance.contributing_projects.remove(project)
 
@@ -139,13 +141,14 @@ class TaskListView(ListAPIView):
             serialized_todo_tasks = self.serializer_class(todo_tasks, many=True).data
             serialized_in_progress_tasks = self.serializer_class(in_progress_tasks, many=True).data
             serialized_done_tasks = self.serializer_class(done_tasks, many=True).data
-            project_name = Project.objects.get(id=project_id).name
+            project = Project.objects.get(id=project_id)
 
             response_data = {
                 'todo_tasks': serialized_todo_tasks,
                 'in_progress_tasks': serialized_in_progress_tasks,
                 'done_tasks': serialized_done_tasks,
-                'project_name': project_name,
+                'project_name': project.name,
+                'project_status': project.is_active,
             }
             status_code = status.HTTP_200_OK
         else:
@@ -213,6 +216,8 @@ class MemberListView(ListAPIView):
         project_id = kwargs.get('project_id', None)
 
         members = Project.objects.get(id=project_id).project_members.all()
+
+        # import ipdb; ipdb.set_trace()
 
         if members:
             serializer = UserSerializer(members, many=True)
