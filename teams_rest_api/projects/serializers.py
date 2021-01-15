@@ -1,3 +1,5 @@
+from django.contrib.auth import get_user_model
+
 from collections import OrderedDict
 from rest_framework import serializers
 
@@ -186,9 +188,28 @@ class ProjectSerializer(serializers.ModelSerializer):
         :param validated_data: deserialized data
         :return: updated Project instance
         """
+
+        # import ipdb; ipdb.set_trace()
+
+        user_model = get_user_model()
+
+        owner_uuid_dict = OrderedDict([('uuid', str(instance.owner.uuid))])
+        members = validated_data.get('project_members', None)
+        if members:
+            if owner_uuid_dict not in members:
+                members.append(owner_uuid_dict)
+                uuids = [item['uuid'] for item in members]
+                users = user_model.objects.filter(uuid__in=uuids)
+                instance.project_members.set(users)
+            else:
+                uuids = [item['uuid'] for item in members]
+                users = user_model.objects.filter(uuid__in=uuids)
+                instance.project_members.set(users)
+
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         instance.is_active = validated_data.get('is_active', instance.is_active)
+        # instance.project_members = validated_data.get('project_members', instance.project_members)
         instance.save()
 
         return instance

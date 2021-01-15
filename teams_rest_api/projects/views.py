@@ -27,14 +27,33 @@ class ProjectListView(APIView):
 
     def get(self, request):
         projects = Project.objects.filter(project_members=request.user)
+        user_model = get_user_model()
 
         if projects:
             serializer = ProjectSerializer(projects, many=True)
             response_data = serializer.data
 
             for project in response_data:
+                # import ipdb; ipdb.set_trace()
                 is_owned_by_user = bool(project['owner']['full_name'] == str(request.user))
                 project['is_owned_by_user'] = is_owned_by_user
+                for member in project['project_members']:
+                    if member != project['owner']:
+                        member_obj = user_model.objects.get(uuid=member['uuid'])
+                        # import ipdb; ipdb.set_trace()
+                        invitation = Invitation.objects.filter(invitee=member_obj).filter(project=project['id']).first()  # noqa
+                        if invitation:
+                            member.update({
+                                'confirmed': invitation.status,
+                            })
+                        else:
+                            member.update({
+                                'confirmed': True,
+                            })
+                    else:
+                        member.update({
+                            'confirmed': True,
+                        })
 
                 # finished_tasks = [task for task in project['tasks'] if task['status'] == 'DN']  # noqa
                 # finished_tasks_percentage = (len(finished_tasks) / len(response_data[0]['tasks'])) * 100  # noqa
@@ -83,9 +102,10 @@ class ProjectCreateView(APIView):
 
                 # import ipdb; ipdb.set_trace()
 
+                '''
                 if not invitation.status:
                     member_instance.contributing_projects.remove(project)
-
+                '''
             response = Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             response = Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -104,6 +124,8 @@ class ProjectDetailView(APIView):
     def patch(self, request, project_id):
         project = get_object_or_404(Project, pk=project_id)
         serializer = ProjectSerializer(project, data=request.data, partial=True)
+
+        # import ipdb; ipdb.set_trace()
 
         if serializer.is_valid():
             serializer.save()
