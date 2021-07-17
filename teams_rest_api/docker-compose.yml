@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    build: .
+    command: bash -c "python manage.py runserver 0.0.0.0:8001"
+    container_name: teams_rest_api
+    volumes:
+      - .:/utem_teams_api
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db

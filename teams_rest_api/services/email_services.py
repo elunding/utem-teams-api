@@ -21,6 +21,9 @@ TEMPLATE_NAME = 'email_template.html'
 
 class EmailServices:
 
+    def __init__(self):
+        pass
+
     @staticmethod
     def send_verification_email(user_email, request):
         try:
