@@ -9,7 +9,7 @@ services:
       - POSTGRES_PASSWORD=postgres
   web:
     build: .
-    command: bash -c "python manage.py runserver 0.0.0.0:8001"
+    command: bash -c "pip install -r requirements.txt && python manage.py runserver 0.0.0.0:8001"
     container_name: teams_rest_api
     volumes:
       - .:/utem_teams_api
