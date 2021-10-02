@@ -90,11 +90,11 @@ WSGI_APPLICATION = 'teams_rest_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'utem_teams_db',
-        'USER': 'uteams',
-        'PASSWORD': 'PZutJzYLJwJx3H9J',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
